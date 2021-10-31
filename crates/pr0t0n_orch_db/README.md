@@ -9,6 +9,19 @@ PostgreSQL database for Pr0t0n Orchestrator.
 - `./src/models.rs/` contains Rust structs for interacting with the models.
 - `./src/schema.rs` contains Rust macros for the defining the table schema.
 
+## Common flows
+
+The system needs to be able to execute the following flows:
+
+- Basic CRUD on all entities.
+- Query the entire setup for an asset group.
+- Config sync:
+  - For each input device, query all services that it needs to upload to. Update it's config based on those connections.
+  - For each service, query all services and output devices it needs to forward to.
+
+Should we keep input devices, output devices, and services separate?
+They all share common fields such as their address and need similar configs regarding health monitoring.
+
 ## Windows Setup
 
 1. Install PostgreSQL from https://www.enterprisedb.com/downloads/postgres-postgresql-downloads. Use the default install options.
@@ -17,24 +30,3 @@ PostgreSQL database for Pr0t0n Orchestrator.
    ```
    cargo install diesel_cli --no-default-features --features postgres
    ```
-
----
-
-1. Install MySQL.
-   1. Go to https://dev.mysql.com/downloads/installer/ to get the community build for server and client.
-   1. Run `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '<PASSWORD>'` to enable access by VS Code.
-1. Use `vcpkg` to install `libmysql` as instructed at https://github.com/sgrif/mysqlclient-sys.
-   1. Clone the vcpkg repo.
-      ```
-      git clone https://github.com/Microsoft/vcpkg.git
-      ```
-      Make sure you are in the directory you want the tool installed to before doing this.
-   1. Run the bootstrap script to build `vcpkg`.
-      ```
-      .\vcpkg\bootstrap-vcpkg.bat
-      ```
-   1. Install `libmysql`.
-      ```
-      vcpkg install libmysql:x64-windows
-      ```
-1. Install Diesel CLI by running `cargo install diesel_cli --no-default-features --features mysql`.
