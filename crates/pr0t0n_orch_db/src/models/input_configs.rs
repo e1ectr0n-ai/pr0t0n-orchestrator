@@ -35,8 +35,8 @@ impl<'a> NewInputConfig<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::models::asset_groups::temp_asset_group_test;
     use crate::models::*;
+    use crate::test_utils::temp_asset_group_test;
     use diesel::PgConnection;
 
     #[test]

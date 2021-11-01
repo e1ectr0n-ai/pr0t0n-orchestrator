@@ -11,6 +11,8 @@ pub mod err;
 pub mod models;
 mod schema;
 
+pub mod test_utils;
+
 pub use err::Error;
 
 pub fn establish_connection() -> PgConnection {

@@ -9,6 +9,16 @@ PostgreSQL database for Pr0t0n Orchestrator.
 - `./src/models.rs/` contains Rust structs for interacting with the models.
 - `./src/schema.rs` contains Rust macros for the defining the table schema.
 
+## Development
+
+To run unit tests, run:
+
+```
+cargo test -- --test-threads 1
+```
+
+We force a single thread to prevent locking in the database.
+
 ## Common flows
 
 The system needs to be able to execute the following flows:

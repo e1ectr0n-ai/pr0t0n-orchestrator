@@ -1,8 +1,4 @@
-use crate::{
-    err::Error,
-    schema::asset_groups::{self, dsl},
-};
-use diesel::{ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl};
+use crate::{models::generic::*, schema::asset_groups};
 
 #[derive(Queryable, Debug)]
 pub struct AssetGroup {
@@ -10,12 +6,14 @@ pub struct AssetGroup {
     pub name: String,
     pub description: String,
 }
-impl AssetGroup {
-    pub fn delete(id: i32, conn: &PgConnection) -> Result<usize, Error> {
-        diesel::delete(dsl::asset_groups.filter(dsl::asset_group_id.eq(id)))
-            .execute(conn)
-            .map_err(|e| e.into())
-    }
+impl DbUpdate for AssetGroup {
+    type Table = asset_groups::table;
+}
+impl DbDelete for AssetGroup {
+    type Table = asset_groups::table;
+}
+impl DbFind for AssetGroup {
+    type Table = asset_groups::table;
 }
 
 #[derive(Insertable, Debug)]
@@ -24,40 +22,15 @@ pub struct NewAssetGroup<'a> {
     pub name: &'a str,
     pub description: &'a str,
 }
-impl<'a> NewAssetGroup<'a> {
-    pub fn insert(&'a self, conn: &PgConnection) -> Result<AssetGroup, Error> {
-        diesel::insert_into(asset_groups::table)
-            .values(self)
-            .get_result(conn)
-            .map_err(|e| e.into())
-    }
-}
 
-/// Runs a test function `f` using a temporary asset group that is cleaned up
-/// regardless of the internal test result.
-#[cfg(test)]
-pub fn temp_asset_group_test(
-    f: fn(&PgConnection, &AssetGroup) -> Result<(), Error>,
-) -> Result<(), Error> {
-    use crate::establish_connection;
-
-    let conn = establish_connection();
-    let asset_group = NewAssetGroup {
-        name: "temp_asset_group",
-        description: "A test asset group",
-    }
-    .insert(&conn)?;
-    println!("Inserted {:#?}", asset_group);
-    let result = f(&conn, &asset_group);
-
-    let num_deleted = AssetGroup::delete(asset_group.asset_group_id, &conn).unwrap();
-    println!("Deleted {} asset group.", num_deleted);
-    result
+impl<'a> DbInsert for NewAssetGroup<'a> {
+    type Table = asset_groups::table;
+    type Return = AssetGroup;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::models::asset_groups::temp_asset_group_test;
+    use crate::test_utils::temp_asset_group_test;
 
     #[test]
     fn test_asset_group() {

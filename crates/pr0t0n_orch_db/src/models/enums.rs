@@ -70,3 +70,11 @@ impl Default for HealthStatus {
         Self::Healthy
     }
 }
+
+/// Health status for a service.
+#[derive(Debug, Clone, Copy)]
+pub enum ServiceConfigId {
+    InputConfigId(i32),
+    ServiceConfigId(i32),
+    ProcessorConfigId(i32),
+}
