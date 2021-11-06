@@ -41,6 +41,7 @@ table! {
     service_edges (input_service_id, output_service_id) {
         input_service_id -> Int4,
         output_service_id -> Int4,
+        asset_group_id -> Int4,
     }
 }
 
@@ -61,6 +62,7 @@ table! {
 joinable!(input_configs -> asset_groups (asset_group_id));
 joinable!(output_configs -> asset_groups (asset_group_id));
 joinable!(processor_configs -> asset_groups (asset_group_id));
+joinable!(service_edges -> asset_groups (asset_group_id));
 joinable!(services -> asset_groups (asset_group_id));
 joinable!(services -> input_configs (input_config_id));
 joinable!(services -> output_configs (output_config_id));

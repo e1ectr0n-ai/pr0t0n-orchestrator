@@ -82,6 +82,24 @@ pub trait DbInsert: Sized {
     }
 }
 
+/// Allows insertion for this entity.
+pub trait DbInsertAll: Sized {
+    type Table: Table + HasTable<Table = Self::Table>;
+    type Return;
+
+    /// Insert a value into the table.
+    fn insert<'a>(&'a self, conn: &PgConnection) -> Result<Vec<Self::Return>, diesel::result::Error>
+    where
+        &'a Self: Insertable<Self::Table>,
+        InsertStatement<Self::Table, <&'a Self as Insertable<Self::Table>>::Values>:
+            RunQueryDsl<PgConnection> + LoadQuery<PgConnection, Self::Return>,
+    {
+        diesel::insert_into(Self::Table::table())
+            .values(self)
+            .get_results(conn)
+    }
+}
+
 /// Allows mapped insertion for this entity.
 pub trait DbMappedInsert<'a>: Sized + 'a {
     type Table: Table + HasTable<Table = Self::Table>;

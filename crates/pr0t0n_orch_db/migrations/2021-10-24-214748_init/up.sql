@@ -56,5 +56,6 @@ CREATE TABLE services (
 CREATE TABLE service_edges (
   input_service_id SERIAL REFERENCES services(service_id) ON DELETE CASCADE,
   output_service_id SERIAL REFERENCES services(service_id) ON DELETE CASCADE,
-  CONSTRAINT service_edge_pkey PRIMARY KEY (input_service_id, output_service_id)
+  CONSTRAINT service_edge_pkey PRIMARY KEY (input_service_id, output_service_id),
+  asset_group_id SERIAL NOT NULL REFERENCES asset_groups(asset_group_id) ON DELETE CASCADE
 );
