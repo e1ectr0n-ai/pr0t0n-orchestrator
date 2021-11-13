@@ -18,6 +18,8 @@ pub async fn ws_index(r: HttpRequest, stream: web::Payload) -> Result<HttpRespon
     res
 }
 
+type DbPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+
 /// websocket connection is long running connection, it easier
 /// to handle with an actor
 pub struct OrchSocket {

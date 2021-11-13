@@ -23,3 +23,5 @@ bytes = "0.5.3"
 env_logger = "0.8"
 futures = "0.3.1"
 pr0t0n_orch_db = {path = "../pr0t0n_orch_db"}
+r2d2 = "0.8.9"
+r2d2_postgres = "0.18.1"
