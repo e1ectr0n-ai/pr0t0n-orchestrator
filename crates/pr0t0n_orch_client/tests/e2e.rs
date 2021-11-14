@@ -6,7 +6,9 @@ use actix_web::{web, App, HttpServer};
 use awc::Client;
 use futures::StreamExt;
 
-use pr0t0n_orch::ws_index;
+use pr0t0n_orch::websocket::{
+    ws_index, PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER,
+};
 use pr0t0n_orch_client::{ChatClient, ClientCommand};
 
 #[actix_rt::test]
@@ -29,6 +31,8 @@ async fn e2e_test() {
     // Connect a client to it.
     let res = Client::new()
         .ws(format!("http://{}/ws/", host))
+        .set_header(PR0T0N_ASSET_GROUP_ID_HEADER, "0")
+        .set_header(PR0T0N_CLIENT_ADDRESS_HEADER, "localhost:1234")
         .connect()
         .await
         .map_err(|e| {
@@ -36,7 +40,6 @@ async fn e2e_test() {
         });
     println!("{:?}", res);
     let (response, framed) = res.unwrap();
-
     println!("{:?}", response);
 
     let (sink, stream) = framed.split();

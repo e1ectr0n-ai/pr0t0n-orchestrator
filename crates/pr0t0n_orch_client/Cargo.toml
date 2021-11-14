@@ -22,8 +22,9 @@ awc = "2"
 bytes = "0.5.3"
 env_logger = "0.8"
 futures = "0.3.1"
+pr0t0n_orch = {path = "../pr0t0n_orch"}
+pr0t0n_orch_db = {path = "../pr0t0n_orch_db"}
 
 # standard crate data is left out
 [dev-dependencies]
 actix-rt = "*"
-pr0t0n_orch = {path = "../pr0t0n_orch"}

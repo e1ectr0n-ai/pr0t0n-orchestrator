@@ -51,6 +51,7 @@ CREATE TABLE services (
   output_config_id INT DEFAULT (NULL) REFERENCES output_configs(output_config_id) ON DELETE SET NULL,
   processor_config_id INT DEFAULT (NULL) REFERENCES processor_configs(processor_config_id) ON DELETE SET NULL
 );
+CREATE UNIQUE INDEX services_address_idx ON services (address);
 
 -- Connections between services.
 CREATE TABLE service_edges (

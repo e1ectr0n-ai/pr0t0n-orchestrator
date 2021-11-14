@@ -1,4 +1,4 @@
-use crate::err::Error;
+use crate::errors::Error;
 
 /// Shared interface for enums with corresponding strings.
 pub trait StringEnum: Sized {

@@ -30,7 +30,7 @@ impl<'a> DbInsert for NewAssetGroup<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::test_utils::temp_asset_group_test;
+    use crate::testing::temp_asset_group_test;
 
     #[test]
     fn test_asset_group() {

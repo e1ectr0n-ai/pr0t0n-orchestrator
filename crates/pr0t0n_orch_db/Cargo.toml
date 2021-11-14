@@ -4,6 +4,8 @@ name = "pr0t0n_orch_db"
 version = "0.1.0"
 
 [dependencies]
-diesel = {version = "1.4.4", features = ["postgres"]}
+diesel = {version = "1.4.4", features = ["postgres", "r2d2"]}
 diesel_codegen = {version = "0.16.0", features = ["postgres"]}
 dotenv = "0.15.0"
+log = "0.4.0"
+r2d2 = "0.8.9"

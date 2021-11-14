@@ -1,5 +1,5 @@
 use crate::{
-    err::Error,
+    errors::Error,
     models::enums::{HealthStatus, ServiceConfigId, ServiceType, StringEnum},
     models::generic::*,
     schema::{service_edges, services},
@@ -57,6 +57,14 @@ impl Service {
     }
 
     /// Get all services for an asset_group_id.
+    pub fn find_by_addr(conn: &PgConnection, address: &str) -> Result<Self, Error> {
+        let result: QueryableService = services::table
+            .filter(services::address.eq(address))
+            .get_result(conn)?;
+        result.try_into()
+    }
+
+    /// Get all services for an asset_group_id.
     pub fn get_graph(
         conn: &PgConnection,
         asset_group_id: i32,
@@ -64,6 +72,39 @@ impl Service {
         let services = Self::get_all(conn, asset_group_id)?;
         let edges = ServiceEdge::get_all(conn, asset_group_id)?;
         Ok((services, edges))
+    }
+
+    /// Given an address, if a service with that address already exists, create it.
+    /// Otherwise update it's connection status to healthy.
+    pub fn upsert_healthy_address(
+        conn: &PgConnection,
+        asset_group_id: i32,
+        address: &str,
+    ) -> Result<(), Error> {
+        let new_service = InsertableService {
+            asset_group_id,
+            name: address,
+            address,
+            health_status: HealthStatus::Healthy.as_str(),
+            service_type: ServiceType::Input.as_str(),
+            ..Default::default()
+        };
+        diesel::insert_into(services::table)
+            .values(new_service)
+            .on_conflict(services::address)
+            .do_update()
+            .set(services::health_status.eq(HealthStatus::Healthy.as_str()))
+            .execute(conn)?;
+        Ok(())
+    }
+
+    /// Given an address, if a service with that address already exists, create it.
+    /// Otherwise update it's connection status to healthy.
+    pub fn disconnect_address(conn: &PgConnection, address: &str) -> Result<(), Error> {
+        diesel::update(services::table.filter(services::address.eq(address)))
+            .set(services::health_status.eq(HealthStatus::Disconnected.as_str()))
+            .execute(conn)?;
+        Ok(())
     }
 
     /// Get all output services for a given service.
@@ -201,7 +242,7 @@ impl ServiceEdge {
 #[cfg(test)]
 mod tests {
     use crate::models::*;
-    use crate::test_utils::temp_asset_group_test;
+    use crate::testing::temp_asset_group_test;
     use diesel::PgConnection;
 
     pub fn setup_edges(service_pairs: Vec<(&Service, &Service)>) -> Vec<ServiceEdge> {
@@ -312,6 +353,56 @@ mod tests {
             println!("Output service inputs {:#?}", output_service_inputs);
             assert_eq!(output_service_inputs.len(), 1);
 
+            // Check upsetting new connection.
+            Service::disconnect_address(conn, &output_service.address)?;
+            Service::upsert_healthy_address(
+                conn,
+                output_service.asset_group_id,
+                &output_service.address,
+            )?;
+
+            let new_addr = "new.address:123";
+            Service::upsert_healthy_address(conn, output_service.asset_group_id, new_addr)?;
+            let new_service = Service::find_by_addr(conn, new_addr);
+            println!("Got new service: {:#?}", new_service);
+            Ok(())
+        })
+        .unwrap();
+    }
+
+    #[test]
+    fn test_connect_service() {
+        temp_asset_group_test(|conn: &PgConnection, asset_group: &AssetGroup| {
+            let mut input_service = NewService {
+                asset_group_id: asset_group.asset_group_id,
+                name: "test_input",
+                address: "localhost:2222",
+                service_type: ServiceType::Input,
+                health_status: HealthStatus::Disconnected,
+                ..Default::default()
+            }
+            .insert(conn)?;
+            println!("Inserted {:#?}", input_service);
+
+            // Check updating for existing service.
+            Service::upsert_healthy_address(
+                conn,
+                input_service.asset_group_id,
+                &input_service.address,
+            )?;
+            input_service = Service::find(conn, input_service.service_id)?;
+            assert_eq!(input_service.health_status, HealthStatus::Healthy);
+            Service::disconnect_address(conn, &input_service.address)?;
+            input_service = Service::find(conn, input_service.service_id)?;
+            assert_eq!(input_service.health_status, HealthStatus::Disconnected);
+
+            let new_addr = "new.address:123";
+            Service::upsert_healthy_address(conn, input_service.asset_group_id, new_addr)?;
+            let mut new_service = Service::find_by_addr(conn, new_addr)?;
+            assert_eq!(new_service.health_status, HealthStatus::Healthy);
+            Service::disconnect_address(conn, new_addr)?;
+            new_service = Service::find_by_addr(conn, new_addr)?;
+            assert_eq!(new_service.health_status, HealthStatus::Disconnected);
             Ok(())
         })
         .unwrap();

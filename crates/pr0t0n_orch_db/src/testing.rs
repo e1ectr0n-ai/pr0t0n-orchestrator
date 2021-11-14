@@ -1,4 +1,4 @@
-use crate::{err::Error, models::*};
+use crate::{errors::Error, models::*};
 use diesel::PgConnection;
 
 pub fn temp_asset_group_test(

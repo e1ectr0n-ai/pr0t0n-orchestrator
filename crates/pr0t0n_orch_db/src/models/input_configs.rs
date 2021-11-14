@@ -1,5 +1,5 @@
 use crate::{
-    err::Error,
+    errors::Error,
     schema::input_configs::{self},
 };
 use diesel::{pg::Pg, PgConnection, RunQueryDsl};
@@ -36,7 +36,7 @@ impl<'a> NewInputConfig<'a> {
 #[cfg(test)]
 mod tests {
     use crate::models::*;
-    use crate::test_utils::temp_asset_group_test;
+    use crate::testing::temp_asset_group_test;
     use diesel::PgConnection;
 
     #[test]

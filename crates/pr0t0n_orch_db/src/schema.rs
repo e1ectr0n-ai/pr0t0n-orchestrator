@@ -59,6 +59,13 @@ table! {
     }
 }
 
+table! {
+    users (id) {
+        id -> Varchar,
+        name -> Varchar,
+    }
+}
+
 joinable!(input_configs -> asset_groups (asset_group_id));
 joinable!(output_configs -> asset_groups (asset_group_id));
 joinable!(processor_configs -> asset_groups (asset_group_id));
@@ -75,4 +82,5 @@ allow_tables_to_appear_in_same_query!(
     processor_configs,
     service_edges,
     services,
+    users,
 );
