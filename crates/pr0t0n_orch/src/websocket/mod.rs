@@ -109,7 +109,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocketSession 
             }
             Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
             Ok(ws::Message::Close(reason)) => {
-                info!("closed ws session");
+                warn!("Closed ws session");
                 self.server_addr.do_send(Disconnect {
                     client_addr: self.client_addr.clone(),
                 });
@@ -124,10 +124,13 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocketSession 
         }
     }
 }
+
+/// Get a header value as str.
 fn get_header_str<'a>(req: &'a HttpRequest, key: &str) -> Option<&'a str> {
     req.headers().get(key)?.to_str().ok()
 }
 
+/// Get data from connection header.
 fn get_conn_headers<'a>(req: &'a HttpRequest) -> Result<(i32, &'a str), Error> {
     match (
         get_header_str(&req, PR0T0N_ASSET_GROUP_ID_HEADER),

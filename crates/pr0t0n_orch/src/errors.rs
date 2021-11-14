@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub enum Error {
-    R2D2(r2d2::Error),
     ActixWeb(actix_web::Error),
     Unknown(String),
     ValidationError,
@@ -13,11 +12,6 @@ pub enum Error {
     UnprocessableEntity(String),
     BlockingError(String),
     Forbidden,
-}
-impl From<r2d2::Error> for Error {
-    fn from(e: r2d2::Error) -> Self {
-        Self::R2D2(e)
-    }
 }
 impl From<actix_web::Error> for Error {
     fn from(e: actix_web::Error) -> Self {

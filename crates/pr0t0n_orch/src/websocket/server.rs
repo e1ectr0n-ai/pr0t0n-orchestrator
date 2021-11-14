@@ -1,7 +1,10 @@
 use std::collections::HashMap;
 
-use actix::prelude::{Actor, Context, Handler, Message as ActixMessage, Recipient};
-use pr0t0n_orch_db::{get_conn, models::Service, Error, PgPool};
+use actix::{
+    prelude::{Actor, Context, Handler, Message as ActixMessage, Recipient},
+    ResponseFuture,
+};
+use pr0t0n_orch_db::{models::Service, Error, Pool};
 use serde::{Deserialize, Serialize};
 use serde_json::{error::Result as SerdeResult, to_string, Value};
 
@@ -36,11 +39,11 @@ impl Session {
 
 /// Server for managing websockets.
 pub struct Server {
-    pool: PgPool,
+    pool: Pool,
     sessions: HashMap<String, Session>,
 }
 impl Server {
-    pub fn new(pool: PgPool) -> Self {
+    pub fn new(pool: Pool) -> Self {
         Server {
             pool,
             sessions: HashMap::new(),
@@ -74,18 +77,24 @@ pub struct Connect {
     pub client_addr: String,
 }
 impl Handler<Connect> for Server {
-    type Result = Result<(), Error>;
+    type Result = ResponseFuture<Result<(), Error>>;
 
-    fn handle(&mut self, msg: Connect, _: &mut Context<Self>) -> Result<(), Error> {
+    fn handle(&mut self, msg: Connect, _ctx: &mut Context<Self>) -> Self::Result {
         println!("Got message {:?}", msg);
         self.sessions
-            .insert(msg.client_addr.clone(), Session::new(msg.addr));
+            .insert(msg.client_addr.clone(), Session::new(msg.addr.clone()));
 
-        let conn = get_conn(&self.pool)?;
-        info!("Inserting...");
-        Service::upsert_healthy_address(&conn, msg.asset_group_id, &msg.client_addr)?;
-        info!("Inserted.");
-        Ok(())
+        let pool = self.pool.clone();
+        Box::pin(async move {
+            let conn = pool.get().await?;
+            conn.interact(move |conn| {
+                info!("Inserting...");
+                Service::upsert_healthy_address(conn, msg.asset_group_id, &msg.client_addr)?;
+                info!("Inserted.");
+                Ok(())
+            })
+            .await?
+        })
     }
 }
 
@@ -95,17 +104,22 @@ pub struct Disconnect {
     pub client_addr: String,
 }
 impl Handler<Disconnect> for Server {
-    type Result = Result<(), Error>;
+    type Result = ResponseFuture<Result<(), Error>>;
 
-    fn handle(&mut self, msg: Disconnect, _: &mut Context<Self>) -> Result<(), Error> {
+    fn handle(&mut self, msg: Disconnect, _: &mut Context<Self>) -> Self::Result {
         self.sessions.remove(&msg.client_addr);
 
-        let conn = get_conn(&self.pool)?;
-
-        info!("Disconnecting...");
-        Service::disconnect_address(&conn, &msg.client_addr)?;
-        info!("Disconnected.");
-        Ok(())
+        let pool = self.pool.clone();
+        Box::pin(async move {
+            let conn = pool.get().await?;
+            conn.interact(move |conn| {
+                info!("Disconnecting...");
+                Service::disconnect_address(&conn, &msg.client_addr)?;
+                info!("Disconnected.");
+                Ok(())
+            })
+            .await?
+        })
     }
 }
 

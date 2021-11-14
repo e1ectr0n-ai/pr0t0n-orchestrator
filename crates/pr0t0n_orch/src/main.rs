@@ -2,7 +2,7 @@
 use actix::Actor;
 use actix_web::{middleware, App, HttpServer};
 use pr0t0n_orch::{routes, websocket};
-use pr0t0n_orch_db::{new_pool, PgPool};
+use pr0t0n_orch_db::{create_pool, Pool};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -12,7 +12,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     println!("Create DB pool...");
-    let pool: PgPool = new_pool();
+    let pool: Pool = create_pool(4).unwrap();
     println!("Create server...");
     let server = websocket::Server::new(pool.clone()).start();
 

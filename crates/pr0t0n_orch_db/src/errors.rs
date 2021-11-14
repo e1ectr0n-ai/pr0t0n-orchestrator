@@ -1,18 +1,36 @@
 /// Error enum.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Error {
     UnknownError,
-    DatabaseError(diesel::result::Error),
-    DatabasePoolError(r2d2::Error),
+    DotEnvError(String),
+    DieselError(String),
+    PoolBuildError,
+    PoolError(String),
+    InteractError(String),
     InvalidEnumValue(String),
 }
 impl From<diesel::result::Error> for Error {
     fn from(err: diesel::result::Error) -> Self {
-        Self::DatabaseError(err)
+        Self::DieselError(err.to_string())
     }
 }
-impl From<r2d2::Error> for Error {
-    fn from(err: r2d2::Error) -> Self {
-        Self::DatabasePoolError(err)
+impl From<deadpool_diesel::PoolError> for Error {
+    fn from(err: deadpool_diesel::PoolError) -> Self {
+        Self::PoolError(err.to_string())
+    }
+}
+impl From<deadpool_diesel::InteractError> for Error {
+    fn from(err: deadpool_diesel::InteractError) -> Self {
+        Self::InteractError(err.to_string())
+    }
+}
+impl From<dotenv::Error> for Error {
+    fn from(err: dotenv::Error) -> Self {
+        Self::DotEnvError(err.to_string())
+    }
+}
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }

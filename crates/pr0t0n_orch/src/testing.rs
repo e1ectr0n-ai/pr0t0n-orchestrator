@@ -25,20 +25,22 @@ struct CookieValue {
 
 pub async fn get_service(
 ) -> impl Service<Request = Request, Response = ServiceResponse<Body>, Error = Error> {
+    let pool = pr0t0n_orch_db::create_pool(4).unwrap();
     test::init_service(
         App::new()
-            .data(pr0t0n_orch_db::new_pool())
-            .data(Server::new(pr0t0n_orch_db::new_pool()).start())
+            .data(pool.clone())
+            .data(Server::new(pool.clone()).start())
             .configure(routes),
     )
     .await
 }
 
 pub fn get_test_server() -> test::TestServer {
-    test::start(|| {
+    let pool = pr0t0n_orch_db::create_pool(4).unwrap();
+    test::start(move || {
         App::new()
-            .data(pr0t0n_orch_db::new_pool())
-            .data(Server::new(pr0t0n_orch_db::new_pool()).start())
+            .data(pool.clone())
+            .data(Server::new(pool.clone()).start())
             .configure(routes)
     })
 }
