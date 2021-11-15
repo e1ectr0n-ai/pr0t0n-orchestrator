@@ -9,6 +9,7 @@ pub enum Error {
     ValidationError,
     BadRequest(String),
     InternalServerError(String),
+    Pr0t0nDbError(pr0t0n_orch_db::Error),
     NotFound(String),
     UnprocessableEntity(String),
     BlockingError(String),
@@ -22,6 +23,16 @@ impl From<r2d2::Error> for Error {
 impl From<actix_web::Error> for Error {
     fn from(e: actix_web::Error) -> Self {
         Self::ActixWeb(e)
+    }
+}
+impl From<diesel::result::Error> for Error {
+    fn from(e: diesel::result::Error) -> Self {
+        Self::Pr0t0nDbError(e.into())
+    }
+}
+impl From<pr0t0n_orch_db::Error> for Error {
+    fn from(e: pr0t0n_orch_db::Error) -> Self {
+        Self::Pr0t0nDbError(e)
     }
 }
 impl std::fmt::Display for Error {

@@ -6,14 +6,10 @@ use pr0t0n_orch_db::{new_pool, PgPool};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("Set environment vars...");
-    std::env::set_var("RUST_LOG", "actix_server=info,actix_web=info");
-    println!("Init logger...");
+    std::env::set_var("RUST_LOG", "info");
     env_logger::init();
 
-    println!("Create DB pool...");
     let pool: PgPool = new_pool();
-    println!("Create server...");
     let server = websocket::Server::new(pool.clone()).start();
 
     println!("Run HTTP Server...");

@@ -1,14 +1,13 @@
 //! Pr0t0n Orchestrator.
 pub mod errors;
 pub use errors::Error;
-pub mod websocket;
-pub use websocket::WebSocketSession;
 pub mod routes;
+pub mod websocket;
 
 #[macro_use]
 extern crate log;
 
-#[cfg(test)]
+// #[cfg(test)]
 pub mod testing;
 
 use actix_web::web;

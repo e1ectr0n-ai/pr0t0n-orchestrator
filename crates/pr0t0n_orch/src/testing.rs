@@ -1,4 +1,3 @@
-#[cfg(test)]
 use std::time::SystemTime;
 
 use actix::Actor;
@@ -9,10 +8,7 @@ use actix_web_actors::ws;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json;
 
-use crate::{
-    routes,
-    websocket::{MessageToClient, Server},
-};
+use crate::{routes, websocket::Server};
 
 #[derive(Deserialize, Serialize, Debug)]
 struct CookieValue {
@@ -98,16 +94,14 @@ where
     (status, json_body)
 }
 
-pub fn get_websocket_frame_data(frame: ws::Frame) -> Option<MessageToClient> {
+pub fn get_websocket_frame_data(frame: ws::Frame) -> Option<String> {
     match frame {
         ws::Frame::Text(t) => {
             let bytes = t.as_ref();
             let data = String::from_utf8(bytes.to_vec()).unwrap();
-            let value: MessageToClient = serde_json::from_str(&data).unwrap();
-            return Some(value);
+            return Some(data);
         }
         _ => {}
     }
-
     None
 }

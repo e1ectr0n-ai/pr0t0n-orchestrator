@@ -4,14 +4,6 @@ edition = "2018"
 name = "pr0t0n_orch_client"
 version = "1.0.0"
 
-[lib]
-name = "pr0t0n_orch_client"
-path = "src/lib.rs"
-
-[[bin]]
-name = "pr0t0n_orch_client_main"
-path = "src/main.rs"
-
 [dependencies]
 actix = "0.10"
 actix-codec = "0.3"

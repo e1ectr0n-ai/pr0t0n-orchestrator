@@ -31,13 +31,12 @@ pub fn new_pool() -> PgPool {
     // TODO: pass the connection URL into this function rather than extracting
     // it from the environment within this function
     dotenv().ok();
-    println!("Dotenv initialized");
-    let url = env::var("DATABASE_URL").expect("no DB URL"); // TODO: handle errors
+    let url = env::var("DATABASE_URL").expect("DATABASE_URL was not set");
     let manager = ConnectionManager::<PgConnection>::new(url);
-    println!("Built manager");
     r2d2::Pool::builder()
+        .max_size(1) // Error with libpq requires this to be 1 for now: https://github.com/diesel-rs/diesel/discussions/2947.
         .build(manager)
-        .expect("Failed to build connection pool") // TODO: handle errors
+        .expect("Failed to build connection pool")
 }
 
 pub fn establish_connection() -> PgConnection {
@@ -53,6 +52,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let _conn = establish_connection();
+        let pool = new_pool();
+        let _conn = pool.get().unwrap();
     }
 }
