@@ -12,9 +12,7 @@ async fn main() -> std::io::Result<()> {
     let pool: PgPool = new_pool();
     let server = websocket::Server::new(pool.clone()).start();
 
-    println!("Run HTTP Server...");
     HttpServer::new(move || {
-        println!("Initialize app...");
         App::new()
             .data(pool.clone())
             .data(server.clone())
