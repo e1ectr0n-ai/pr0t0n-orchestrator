@@ -50,13 +50,11 @@ impl Actor for WebSocketSession {
     type Context = ws::WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
-        println!("Send heartbeat...");
+        info!("Started connection for {}", self.client_addr);
         self.send_heartbeat(ctx);
 
-        println!("Get address...");
         let session_addr = ctx.address();
 
-        println!("Send connect...");
         self.server_addr
             .send(ConnectMessage {
                 addr: session_addr.recipient(),

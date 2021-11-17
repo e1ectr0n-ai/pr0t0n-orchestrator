@@ -45,7 +45,6 @@ pub async fn ws_index(
     stream: web::Payload,
     server_addr: web::Data<Addr<Server>>,
 ) -> Result<HttpResponse, actix_web::Error> {
-    println!("Start websocket...");
     let (asset_group_id, client_addr) = get_conn_headers(&req)?;
     let res = ws::start(
         WebSocketSession::new(
