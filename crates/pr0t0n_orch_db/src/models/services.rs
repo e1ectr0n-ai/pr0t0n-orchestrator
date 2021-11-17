@@ -261,8 +261,8 @@ mod tests {
         temp_asset_group_test(|conn: &PgConnection, asset_group: &AssetGroup| {
             let mut input_service = NewService {
                 asset_group_id: asset_group.asset_group_id,
-                name: "test_input",
-                address: "localhost:2222",
+                name: "test_input1",
+                address: "test_input1:2222",
                 service_type: ServiceType::Input,
                 health_status: HealthStatus::Healthy,
                 ..Default::default()
@@ -280,7 +280,7 @@ mod tests {
             let processor_service1 = NewService {
                 asset_group_id: asset_group.asset_group_id,
                 name: "test_processor1",
-                address: "192.168.1.0:2222",
+                address: "test_processor1:2222",
                 service_type: ServiceType::Processor,
                 health_status: HealthStatus::Healthy,
                 ..Default::default()
@@ -291,7 +291,7 @@ mod tests {
             let processor_service2 = NewService {
                 asset_group_id: asset_group.asset_group_id,
                 name: "test_processor2",
-                address: "192.168.2.0:2222",
+                address: "test_processor2:2222",
                 service_type: ServiceType::Processor,
                 health_status: HealthStatus::Healthy,
                 ..Default::default()
@@ -301,8 +301,8 @@ mod tests {
 
             let output_service = NewService {
                 asset_group_id: asset_group.asset_group_id,
-                name: "test_output",
-                address: "192.168.1.2:2222",
+                name: "test_output1",
+                address: "test_output1:2222",
                 service_type: ServiceType::Output,
                 health_status: HealthStatus::Healthy,
                 ..Default::default()
@@ -361,7 +361,7 @@ mod tests {
                 &output_service.address,
             )?;
 
-            let new_addr = "new.address:123";
+            let new_addr = "new_address1:123";
             Service::upsert_healthy_address(conn, output_service.asset_group_id, new_addr)?;
             let new_service = Service::find_by_addr(conn, new_addr);
             println!("Got new service: {:#?}", new_service);
@@ -375,8 +375,8 @@ mod tests {
         temp_asset_group_test(|conn: &PgConnection, asset_group: &AssetGroup| {
             let mut input_service = NewService {
                 asset_group_id: asset_group.asset_group_id,
-                name: "test_input",
-                address: "localhost:2222",
+                name: "test_input2",
+                address: "test_input2:2222",
                 service_type: ServiceType::Input,
                 health_status: HealthStatus::Disconnected,
                 ..Default::default()
@@ -396,7 +396,7 @@ mod tests {
             input_service = Service::find(conn, input_service.service_id)?;
             assert_eq!(input_service.health_status, HealthStatus::Disconnected);
 
-            let new_addr = "new.address:123";
+            let new_addr = "new_address2:123";
             Service::upsert_healthy_address(conn, input_service.asset_group_id, new_addr)?;
             let mut new_service = Service::find_by_addr(conn, new_addr)?;
             assert_eq!(new_service.health_status, HealthStatus::Healthy);

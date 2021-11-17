@@ -61,10 +61,6 @@ async fn test_ws() -> Result<(), Error> {
         assert_eq!(service.health_status, HealthStatus::Healthy);
     }
 
-    println!("Waiting for user to check the database...");
-    delay_for(Duration::from_secs(15)).await; // Let the sockets time out
-    println!("Done waiting, disconnecting!");
-
     let mut close_futures = Vec::with_capacity(addresses.len());
     for stream in &mut streams {
         // After disconnecting, make sure we removed the entry from the database.
@@ -75,8 +71,7 @@ async fn test_ws() -> Result<(), Error> {
         future.await.unwrap();
     }
 
-    println!("Waiting for user to check the database...");
-    delay_for(Duration::from_secs(15)).await; // Let the sockets time out
+    delay_for(Duration::from_secs_f32(2.)).await; // Let the sockets time out
     for addr in &addresses {
         let service = Service::find_by_addr(&conn, addr)?;
         assert_eq!(service.health_status, HealthStatus::Disconnected);
