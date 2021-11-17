@@ -56,6 +56,13 @@ fn main() {
                 println!("error");
                 return;
             }
+            if cmd.ends_with("\n") {
+                cmd.pop();
+                if cmd.ends_with('\r') {
+                    cmd.pop();
+                }
+            }
+            println!("sending command '{}'", cmd);
             addr.do_send(ClientCommand(cmd));
         });
     });

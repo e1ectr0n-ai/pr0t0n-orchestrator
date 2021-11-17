@@ -2,6 +2,15 @@
 
 Simplify orchestration of complex robotics systems that rely on low-latency AI processing at edge.
 
+## Setup
+
+You must specify your Postgres connection using the `.env` file.
+
+```py
+# Note: do NOT submit your username/password changes.
+DATABASE_URL=postgres://USERNAME:PASSWORD@HOST/DATABASE_NAME
+```
+
 ## Commands
 
 To run the server:

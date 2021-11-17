@@ -99,9 +99,10 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocketSession 
             Ok(ws::Message::Pong(_)) => {
                 self.hb = Instant::now();
             }
-            Ok(ws::Message::Text(text)) => match text {
-                _ => ctx.text("Received message."),
-            },
+            Ok(ws::Message::Text(text)) => {
+                info!("Received '{}' from {}", text, self.client_addr);
+                ctx.text("Received message.");
+            }
             Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
             Ok(ws::Message::Close(reason)) => {
                 ctx.close(reason);
