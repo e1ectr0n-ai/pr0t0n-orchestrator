@@ -20,6 +20,9 @@ pub mod testing;
 pub type PgPool = Pool<ConnectionManager<PgConnection>>;
 pub type PgPooledConnection = PooledConnection<ConnectionManager<PgConnection>>;
 
+pub const PR0T0N_ASSET_GROUP_ID_HEADER: &str = "pr0t0n-asset-group-id";
+pub const PR0T0N_CLIENT_ADDRESS_HEADER: &str = "pr0t0n-client-address";
+
 pub fn get_conn(pool: &PgPool) -> Result<PgPooledConnection, r2d2::Error> {
     pool.get().map_err(|err| {
         error!("Failed to get connection - {}", err.to_string());

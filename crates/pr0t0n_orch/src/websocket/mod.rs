@@ -9,8 +9,7 @@ pub use server::*;
 mod session;
 use session::WebSocketSession;
 
-pub const PR0T0N_ASSET_GROUP_ID_HEADER: &str = "pr0t0n-asset-group-id";
-pub const PR0T0N_CLIENT_ADDRESS_HEADER: &str = "pr0t0n-client-address";
+use pr0t0n_orch_db::{PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER};
 
 fn get_header_str<'a>(req: &'a HttpRequest, key: &str) -> Option<&'a str> {
     req.headers().get(key)?.to_str().ok()

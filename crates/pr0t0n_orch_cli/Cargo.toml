@@ -1,8 +1,8 @@
 [package]
 authors = ["Josiah Putman <joshikatsu@gmail.com>"]
 edition = "2018"
-name = "pr0t0n_orch_client"
-version = "1.0.0"
+name = "pr0t0n_orch_cli"
+version = "0.1.0"
 
 [dependencies]
 actix = "0.10"

@@ -7,12 +7,11 @@ use futures::{SinkExt, StreamExt};
 use pr0t0n_orch_db::{
     get_conn,
     models::{AssetGroup, DbDelete, DbInsert, HealthStatus, NewAssetGroup, Service},
-    new_pool,
+    new_pool, PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER,
 };
 
 use pr0t0n_orch::{
     testing::{get_test_server, get_websocket_frame_data},
-    websocket::{PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER},
     Error,
 };
 

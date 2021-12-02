@@ -5,12 +5,12 @@ use actix::*;
 use awc::Client;
 use futures::StreamExt;
 
-use pr0t0n_orch::websocket::{PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER};
 use pr0t0n_orch_client::{ChatClient, ClientCommand};
 use pr0t0n_orch_db::{
     establish_connection,
     models::{DbInsert, NewAssetGroup},
 };
+use pr0t0n_orch_db::{PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER};
 
 fn main() {
     ::std::env::set_var("RUST_LOG", "info");

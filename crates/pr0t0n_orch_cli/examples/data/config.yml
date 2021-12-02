@@ -1,0 +1,26 @@
+services:
+  - address: localhost:123
+    type: input
+    name: localhost:123
+    outputs:
+      - localhost:321
+    alerts:
+      - on: disconnect
+        sender:
+          - data
+        recipients:
+          - joshikatsu@gmail.com
+
+  - address: localhost:321
+    type: processor
+    name: localhost:321
+    alerts:
+      - on: disconnect
+        sender:
+          - data
+        recipients:
+          - joshikatsu@gmail.com
+
+configs:
+  - name: Config1
+    config: { "param": "value" }

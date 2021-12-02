@@ -12,9 +12,9 @@ use pr0t0n_orch_db::{
 
 use pr0t0n_orch::{
     testing::{get_test_server, get_websocket_frame_data},
-    websocket::{PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER},
     Error,
 };
+use pr0t0n_orch_db::{PR0T0N_ASSET_GROUP_ID_HEADER, PR0T0N_CLIENT_ADDRESS_HEADER};
 
 #[actix_rt::test]
 async fn test_ws() -> Result<(), Error> {
