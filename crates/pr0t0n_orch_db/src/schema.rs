@@ -7,29 +7,8 @@ table! {
 }
 
 table! {
-    input_configs (input_config_id) {
-        input_config_id -> Int4,
-        asset_group_id -> Int4,
-        name -> Varchar,
-        description -> Text,
-        max_sample_rate -> Float4,
-        json_config -> Nullable<Text>,
-    }
-}
-
-table! {
-    output_configs (output_config_id) {
-        output_config_id -> Int4,
-        asset_group_id -> Int4,
-        name -> Varchar,
-        description -> Text,
-        json_config -> Text,
-    }
-}
-
-table! {
-    processor_configs (processor_config_id) {
-        processor_config_id -> Int4,
+    configs (config_id) {
+        config_id -> Int4,
         asset_group_id -> Int4,
         name -> Varchar,
         description -> Text,
@@ -53,9 +32,7 @@ table! {
         address -> Varchar,
         service_type -> Varchar,
         health_status -> Varchar,
-        input_config_id -> Nullable<Int4>,
-        output_config_id -> Nullable<Int4>,
-        processor_config_id -> Nullable<Int4>,
+        config_id -> Nullable<Int4>,
     }
 }
 
@@ -66,20 +43,14 @@ table! {
     }
 }
 
-joinable!(input_configs -> asset_groups (asset_group_id));
-joinable!(output_configs -> asset_groups (asset_group_id));
-joinable!(processor_configs -> asset_groups (asset_group_id));
+joinable!(configs -> asset_groups (asset_group_id));
 joinable!(service_edges -> asset_groups (asset_group_id));
 joinable!(services -> asset_groups (asset_group_id));
-joinable!(services -> input_configs (input_config_id));
-joinable!(services -> output_configs (output_config_id));
-joinable!(services -> processor_configs (processor_config_id));
+joinable!(services -> configs (config_id));
 
 allow_tables_to_appear_in_same_query!(
     asset_groups,
-    input_configs,
-    output_configs,
-    processor_configs,
+    configs,
     service_edges,
     services,
     users,

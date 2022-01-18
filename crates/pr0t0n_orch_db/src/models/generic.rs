@@ -87,8 +87,11 @@ pub trait DbInsertAll: Sized {
     type Table: Table + HasTable<Table = Self::Table>;
     type Return;
 
-    /// Insert a value into the table.
-    fn insert<'a>(&'a self, conn: &PgConnection) -> Result<Vec<Self::Return>, diesel::result::Error>
+    /// Insert all values into the table.
+    fn insert_all<'a>(
+        &'a self,
+        conn: &PgConnection,
+    ) -> Result<Vec<Self::Return>, diesel::result::Error>
     where
         &'a Self: Insertable<Self::Table>,
         InsertStatement<Self::Table, <&'a Self as Insertable<Self::Table>>::Values>:
@@ -99,7 +102,6 @@ pub trait DbInsertAll: Sized {
             .get_results(conn)
     }
 }
-
 /// Allows mapped insertion for this entity.
 pub trait DbMappedInsert<'a>: Sized + 'a {
     type Table: Table + HasTable<Table = Self::Table>;
@@ -151,8 +153,7 @@ pub trait DbUpdate: Sized {
         <Self::Table as IntoUpdateTarget>::WhereClause: QueryFragment<Pg>,
         <&'a Self as AsChangeset>::Changeset: QueryFragment<Pg>,
     {
-        let update = diesel::update(Self::Table::table());
-        update.set(self).execute(conn)
+        diesel::update(Self::Table::table()).set(self).execute(conn)
     }
 }
 

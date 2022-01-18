@@ -1,6 +1,7 @@
 use crate::{errors::Error, models::*};
 use diesel::PgConnection;
 
+/// Create an asset group, use it to test a database method, and then delete it.
 pub fn temp_asset_group_test(
     f: fn(&PgConnection, &AssetGroup) -> Result<(), Error>,
 ) -> Result<(), Error> {
@@ -20,6 +21,7 @@ pub fn temp_asset_group_test(
     result
 }
 
+/// Create an asset group, use it to test a database method, and then delete it (async).
 pub async fn temp_asset_group_test_async(
     f: fn(&PgConnection, &AssetGroup) -> Result<(), Error>,
 ) -> Result<(), Error> {

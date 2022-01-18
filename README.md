@@ -30,3 +30,9 @@ To run websocket loadtest:
 ```
 cargo test --package pr0t0n_orch --test websocket_loadtest -- --nocapture
 ```
+
+To test the database:
+
+```
+cargo test --package pr0t0n_orch_db -- --test-threads 1
+```

@@ -1,0 +1,15 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "pr0t0n_orch",
+      "database": "pr0t0n_orch",
+      "username": "postgres",
+      "password": "An7endless&postgres",
+      "group": "el1ectr0n"
+    }
+  ]
+}
