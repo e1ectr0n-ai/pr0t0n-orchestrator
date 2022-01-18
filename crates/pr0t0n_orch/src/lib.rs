@@ -9,10 +9,18 @@ extern crate log;
 
 pub mod testing;
 
-use actix_web::web::{self, Data};
-use pr0t0n_orch_db::PgPool;
+use actix_web::{web, Responder};
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::resource("/").route(web::get().to(index)));
     cfg.service(web::resource("/ws/").route(web::get().to(websocket::ws_index)));
-    cfg.service(web::resource("/config/sync").route(web::post().to(sync::config_sync)));
+    cfg.service(web::resource("/sync/upload/").route(web::post().to(sync::upload)));
+    cfg.service(web::resource("/sync/download/").route(web::post().to(sync::upload)));
+}
+
+pub async fn index(// mut system: web::Json<SystemRepr>,
+    // pool: Data<PgPool>,
+) -> Result<impl Responder, Error> {
+    println!("Log index!");
+    Ok("Index")
 }

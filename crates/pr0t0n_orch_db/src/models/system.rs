@@ -9,21 +9,23 @@ use crate::{
 /// Model the entire database using a single serializable state struct.
 #[derive(Serialize, Deserialize, PartialEq, Default, Clone, Debug)]
 pub struct SystemRepr {
+    pub asset_group_id: i32,
     pub services: Vec<ServiceRepr>,
     pub configs: Vec<ConfigRepr>,
 }
 impl SystemRepr {
     pub fn get_group(conn: &PgConnection, asset_group_id: i32) -> Result<Self, Error> {
         Ok(Self {
+            asset_group_id,
             services: ServiceRepr::get_group(conn, asset_group_id)?,
             configs: ConfigRepr::get_group(conn, asset_group_id)?,
         })
     }
 
     /// Given a representation, make the database match what we have configured.
-    pub fn sync_db(&mut self, conn: &PgConnection, asset_group_id: i32) -> Result<(), Error> {
-        ConfigRepr::sync_db(conn, asset_group_id, &mut self.configs)?;
-        ServiceRepr::sync_db(conn, asset_group_id, &mut self.services)?;
+    pub fn sync_db(&mut self, conn: &PgConnection) -> Result<(), Error> {
+        ConfigRepr::sync_db(conn, self.asset_group_id, &mut self.configs)?;
+        ServiceRepr::sync_db(conn, self.asset_group_id, &mut self.services)?;
         Ok(())
     }
 }
@@ -43,6 +45,7 @@ mod tests {
             // First create a system with two nodes.
             {
                 let system_repr = SystemRepr {
+                    asset_group_id,
                     services: vec![
                         ServiceRepr {
                             address: "localhost:123".to_string(),
@@ -68,7 +71,7 @@ mod tests {
                         ..Default::default()
                     }],
                 };
-                system_repr.clone().sync_db(conn, asset_group_id)?;
+                system_repr.clone().sync_db(conn)?;
 
                 let new_system_repr = SystemRepr::get_group(conn, asset_group_id)?;
                 assert_json_eq!(system_repr, new_system_repr);
@@ -77,6 +80,7 @@ mod tests {
             // Now delete the second node and make sure it's deleted in the database.
             {
                 let system_repr = SystemRepr {
+                    asset_group_id,
                     services: vec![ServiceRepr {
                         address: "localhost:123".to_string(),
                         service_type: ServiceType::Input,
@@ -92,7 +96,7 @@ mod tests {
                         ..Default::default()
                     }],
                 };
-                system_repr.clone().sync_db(conn, asset_group_id)?;
+                system_repr.clone().sync_db(conn)?;
 
                 // let new_system_repr = SystemRepr::get_group(conn, asset_group_id)?;
                 // assert_json_eq!(system_repr, new_system_repr);

@@ -13,7 +13,13 @@ pub enum Error {
     NotFound(String),
     UnprocessableEntity(String),
     BlockingError(String),
+    SerdeJsonError(serde_json::Error),
     Forbidden,
+}
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Self::SerdeJsonError(err)
+    }
 }
 impl From<r2d2::Error> for Error {
     fn from(e: r2d2::Error) -> Self {

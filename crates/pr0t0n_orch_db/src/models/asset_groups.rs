@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{models::generic::*, schema::asset_groups};
 
 #[derive(Queryable, Debug)]
@@ -26,6 +28,11 @@ pub struct NewAssetGroup<'a> {
 impl<'a> DbInsert for NewAssetGroup<'a> {
     type Table = asset_groups::table;
     type Return = AssetGroup;
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GetGroupRequest {
+    pub asset_group_id: i32,
 }
 
 #[cfg(test)]
