@@ -55,6 +55,18 @@ impl Config {
                 .execute(conn)?;
         Ok(num_deleted)
     }
+
+    /// Custom update for service.
+    pub fn update(&self, conn: &PgConnection) -> Result<usize, Error> {
+        let result: usize = diesel::update(configs::table)
+            .set((
+                configs::asset_group_id.eq(self.asset_group_id),
+                configs::description.eq(self.description.clone()),
+                configs::json_config.eq(self.json_config.clone()),
+            ))
+            .execute(conn)?;
+        Ok(result)
+    }
 }
 impl Asset for Config {
     /// Get all services for an asset_group_id.

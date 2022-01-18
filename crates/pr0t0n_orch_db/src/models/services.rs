@@ -5,7 +5,7 @@ use crate::{
     models::{
         configs::Config,
         enums::{HealthStatus, ServiceType},
-        generic::{DbDelete, DbFind, DbInsert, DbInsertAll, DbUpdate},
+        generic::{DbDelete, DbFind, DbInsert, DbInsertAll},
         service_edges::ServiceEdge,
     },
     schema::{service_edges, services},
@@ -131,6 +131,21 @@ impl Service {
             .collect())
     }
 
+    /// Custom update for service.
+    pub fn update(&self, conn: &PgConnection) -> Result<usize, Error> {
+        let result: usize = diesel::update(services::table)
+            .set((
+                services::name.eq(self.name.clone()),
+                services::asset_group_id.eq(self.asset_group_id),
+                services::service_type.eq(self.service_type),
+                services::health_status.eq(self.health_status),
+                services::config_id.eq(self.config_id),
+            ))
+            .execute(conn)?;
+        Ok(result)
+    }
+
+    /// Updates outputs based on respresentation.
     pub fn update_outputs(
         &self,
         conn: &PgConnection,
@@ -164,9 +179,6 @@ impl DbDelete for Service {
     type Table = services::table;
 }
 impl DbFind for Service {
-    type Table = services::table;
-}
-impl DbUpdate for Service {
     type Table = services::table;
 }
 impl Asset for Service {

@@ -12,7 +12,7 @@ CREATE TABLE configs (
   description TEXT NOT NULL,
   json_config TEXT NOT NULL DEFAULT '{}'
 );
-CREATE INDEX config_name_idx ON configs (name);
+CREATE UNIQUE INDEX config_name_idx ON configs (name);
 -- Service. Respresents a processing server, probably hosted in the cloud.
 CREATE TABLE services (
   service_id SERIAL PRIMARY KEY,
@@ -38,7 +38,7 @@ CREATE TABLE services (
   config_id INT DEFAULT (NULL) REFERENCES configs(config_id) ON DELETE
   SET NULL
 );
-CREATE INDEX services_address_idx ON services (address);
+CREATE UNIQUE INDEX service_address_idx ON services (address);
 -- Connections between services.
 CREATE TABLE service_edges (
   input_service_id SERIAL REFERENCES services(service_id) ON DELETE CASCADE,
