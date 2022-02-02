@@ -49,3 +49,8 @@ CREATE TABLE service_edges (
   ),
   asset_group_id SERIAL NOT NULL REFERENCES asset_groups(asset_group_id) ON DELETE CASCADE
 );
+CREATE TABLE event_logs (
+  config_id TIMESTAMP PRIMARY KEY,
+  asset_group_id SERIAL NOT NULL REFERENCES asset_groups(asset_group_id) ON DELETE CASCADE,
+  entry JSONB NOT NULL DEFAULT '{}'
+);
