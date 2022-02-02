@@ -15,7 +15,7 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/").route(web::get().to(index)));
     cfg.service(web::resource("/ws/").route(web::get().to(websocket::ws_index)));
     cfg.service(web::resource("/sync/upload/").route(web::post().to(sync::upload)));
-    cfg.service(web::resource("/sync/download/").route(web::post().to(sync::upload)));
+    cfg.service(web::resource("/sync/download/").route(web::get().to(sync::download)));
 }
 
 pub async fn index(// mut system: web::Json<SystemRepr>,

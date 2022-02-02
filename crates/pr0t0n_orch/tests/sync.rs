@@ -28,31 +28,30 @@ async fn test_response() -> Result<(), Error> {
 
     let system_repr: SystemRepr = SystemRepr {
         asset_group_id,
-        ..Default::default()
-        // services: vec![
-        //     ServiceRepr {
-        //         address: "localhost:123".to_string(),
-        //         service_type: ServiceType::Input,
-        //         name: "localhost:123".to_string(),
-        //         output_addresses: vec!["localhost:234".to_string()],
-        //         config_name: Some("TestConfig".to_string()),
-        //         ..Default::default()
-        //     },
-        //     ServiceRepr {
-        //         address: "localhost:234".to_string(),
-        //         service_type: ServiceType::Input,
-        //         name: "localhost:234".to_string(),
-        //         output_addresses: vec![],
-        //         config_name: Some("TestConfig".to_string()),
-        //         ..Default::default()
-        //     },
-        // ],
-        // configs: vec![ConfigRepr {
-        //     name: "TestConfig".to_string(),
-        //     description: "A test config".to_string(),
-        //     json_config: serde_json::from_str(r#"{ "key": "value" }"#)?,
-        //     ..Default::default()
-        // }],
+        services: vec![
+            ServiceRepr {
+                address: "localhost:123".to_string(),
+                service_type: ServiceType::Input,
+                name: "localhost:123".to_string(),
+                output_addresses: vec!["localhost:234".to_string()],
+                config_name: Some("TestConfig".to_string()),
+                ..Default::default()
+            },
+            ServiceRepr {
+                address: "localhost:234".to_string(),
+                service_type: ServiceType::Input,
+                name: "localhost:234".to_string(),
+                output_addresses: vec![],
+                config_name: Some("TestConfig".to_string()),
+                ..Default::default()
+            },
+        ],
+        configs: vec![ConfigRepr {
+            name: "TestConfig".to_string(),
+            description: "A test config".to_string(),
+            json_config: serde_json::from_str(r#"{ "key": "value" }"#)?,
+            ..Default::default()
+        }],
     };
 
     // Test upload
@@ -66,17 +65,18 @@ async fn test_response() -> Result<(), Error> {
     }
 
     // Test download
-    // {
-    //     let get_group_request = GetGroupRequest { asset_group_id };
-    //     let request = test::TestRequest::get()
-    //         .uri("/sync/download/")
-    //         .set_json(&get_group_request)
-    //         .to_request();
-    //     let response = test::call_service(&mut app, request).await;
-    //     let body = test::read_body(response).await;
-    //     let response_system_repr: SystemRepr = serde_json::from_slice(&body)?;
-    //     assert_json_eq!(system_repr, response_system_repr);
-    // }
+    {
+        let get_group_request = GetGroupRequest { asset_group_id };
+        let request = test::TestRequest::get()
+            .uri("/sync/download/")
+            .set_json(&get_group_request)
+            .to_request();
+        let response = test::call_service(&mut app, request).await;
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = test::read_body(response).await;
+        let response_system_repr: SystemRepr = serde_json::from_slice(&body)?;
+        assert_json_eq!(system_repr, response_system_repr);
+    }
 
     AssetGroup::delete(&conn, asset_group.asset_group_id)?;
     println!("Deleted asset group");

@@ -4,22 +4,23 @@ services:
     name: localhost:123
     output_addresses:
       - localhost:321
-    # alerts:
-    #   - on: disconnect
-    #     sender:
-    #       - data
-    #     recipients:
-    #       - joshikatsu@gmail.com
+    alerts:
+      - on: disconnect
+        sender:
+          - pr0t0nalerts@gmail.com
+        recipients:
+          - joshikatsu@gmail.com
+    config: Config1
 
   - address: localhost:321
     type: processor
     name: localhost:321
-    # alerts:
-    #   - on: disconnect
-    #     sender:
-    #       - data
-    #     recipients:
-    #       - joshikatsu@gmail.com
+    alerts:
+      - on: disconnect
+        sender:
+          - pr0t0nalerts@gmail.com
+        recipients:
+          - joshikatsu@gmail.com
 
 configs:
   - name: Config1

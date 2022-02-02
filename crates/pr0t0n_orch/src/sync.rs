@@ -17,7 +17,10 @@ pub async fn upload(
     println!("Upload!");
     println!("System: {:#?}", system);
     let conn = get_conn(&pool)?;
-    system.sync_db(&conn)?;
+    let res = system.sync_db(&conn);
+    if let Err(e) = res {
+        println!("Error: {:#?}", e);
+    }
     Ok("Done")
 }
 
